@@ -1,5 +1,4 @@
-﻿
-using System.Globalization;
+﻿using System.Globalization;
 
 namespace CheckerBoardPosition.Tests;
 
@@ -11,20 +10,29 @@ public class CheckerBoardPositionsTests
         new CultureInfo("ru-RU"),
         new CultureInfo("es-ES")
     ];
-    public static IEnumerable<object[]> AllowedNumbers()
-    {
-        for (byte i = 1; i <= 8; i++)
-        for (byte j = 1; j <= 8; j++)
-            yield return [i, j];
-    }
 
-    public static IEnumerable<object[]> ErrorNumbers()
+    public static TheoryData<byte, byte> AllowedNumbers
     {
-        for (byte i = 9; i < 255; i++)
-        for (byte j = 9; j < 255; j++)
-            yield return [i, j];
+        get
+        {
+            var data = new TheoryData<byte, byte > ();
+            for (byte i = 1; i <= 8; i++)
+            for (byte j = 1; j <= 8; j++)
+                data.Add(i, j);
+            return data;    
+        }
     }
-
+        
+    public static TheoryData<byte, byte> ErrorNumbers
+    {
+        get
+        {
+            var data = new TheoryData<byte, byte> ();
+            for (byte i = 9; i <= 80; i++)
+            for (byte j = 9; j <= 80; j++)
+                data.Add(i, j);
+            return data;            }
+    }
     [Theory]
     [MemberData(nameof(AllowedNumbers))]
     public void SetCoordinates_ValidNumbers_Pass(byte x, byte y)
@@ -70,7 +78,7 @@ public class CheckerBoardPositionsTests
     public void Parse_VariousCultures_Pass(CultureInfo culture)
     {
         //Arrange
-        string? s = "A1";
+        string s = "A1";
         
         //Act
         var result = ChessExample.CheckerBoardPosition.Parse(s, culture);
@@ -85,7 +93,7 @@ public class CheckerBoardPositionsTests
     {
         //Arrange
         var fake = new ChessExample.CheckerBoardPosition(1,1);
-        string? s = fake.ToString();
+        string s = fake.ToString();
         
         //Act
         bool result =  ChessExample.CheckerBoardPosition.TryParse(s, culture, out var pos);
